@@ -5,9 +5,8 @@ export CXXFLAGS=${CXXFLAGS/-fno-plt}
 export LDFLAGS=${LDFLAGS/,-z,now}
 
 
-bash autogen.sh
-mkdir -pv usr/
-./configure --prefix=usr/ \
+NOCONFIGURE=1 ./autogen.sh
+./configure $XORG_CONFIG \
     --enable-glamor
 make
 

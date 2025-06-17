@@ -70,12 +70,12 @@ XORG_DRIVER_CHECK_EXT(XV, videoproto)
 XORG_DRIVER_CHECK_EXT(DPMSExtension, xextproto)
 
 # Checks for libraries.
-PKG_CHECK_MODULES(LIBDRM, [libdrm >= 2.4.89])
-PKG_CHECK_MODULES(LIBDRM_AMDGPU, [libdrm_amdgpu >= 2.4.76])
+PKG_CHECK_MODULES(LIBDRM, [libdrm >= 2.4.121])
+PKG_CHECK_MODULES(LIBDRM_AMDGPU, [libdrm_amdgpu >= 2.4.121])
 PKG_CHECK_MODULES(GBM, [gbm])
 
 # Obtain compiler/linker options for the driver dependencies
-PKG_CHECK_MODULES(XORG, [xorg-server >= 1.13 xproto fontsproto xf86driproto $REQUIRED_MODULES])
+PKG_CHECK_MODULES(XORG, [xorg-server >= 1.18 xproto fontsproto xf86driproto $REQUIRED_MODULES])
 PKG_CHECK_MODULES(XEXT, [xextproto >= 7.0.99.1],
                   HAVE_XEXTPROTO_71="yes"; AC_DEFINE(HAVE_XEXTPROTO_71, 1, [xextproto 7.1 available]),
                   HAVE_XEXTPROTO_71="no")
@@ -182,6 +182,11 @@ AC_CHECK_DECL(xf86CursorResetCursor,
 
 AC_CHECK_DECL(GBM_BO_USE_LINEAR,
 	      [AC_DEFINE(HAVE_GBM_BO_USE_LINEAR, 1, [Have GBM_BO_USE_LINEAR])], [],
+	      [#include <stdlib.h>
+	       #include <gbm.h>])
+
+AC_CHECK_DECL(GBM_BO_USE_FRONT_RENDERING,
+	      [AC_DEFINE(HAVE_GBM_BO_USE_FRONT_RENDERING, 1, [Have GBM_BO_USE_FRONT_RENDERING])], [],
 	      [#include <stdlib.h>
 	       #include <gbm.h>])
 

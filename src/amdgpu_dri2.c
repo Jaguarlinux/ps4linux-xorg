@@ -200,7 +200,7 @@ amdgpu_dri2_create_buffer2(ScreenPtr pScreen,
 
 error:
 	free(buffers);
-	(*pScreen->DestroyPixmap) (pixmap);
+	dixDestroyPixmap(pixmap, 0);
 	return NULL;
 }
 
@@ -224,7 +224,7 @@ amdgpu_dri2_destroy_buffer2(ScreenPtr pScreen,
 		private->refcnt--;
 		if (private->refcnt == 0) {
 			if (private->pixmap)
-				(*pScreen->DestroyPixmap) (private->pixmap);
+				dixDestroyPixmap(private->pixmap, 0);
 
 			free(buffers->driverPrivate);
 			free(buffers);
@@ -558,7 +558,7 @@ static Bool update_front(DrawablePtr draw, DRI2BufferPtr front)
 	if (!amdgpu_get_flink_name(pAMDGPUEnt, pixmap, &front->name))
 		return FALSE;
 
-	(*draw->pScreen->DestroyPixmap) (priv->pixmap);
+	dixDestroyPixmap(priv->pixmap, 0);
 	front->pitch = pixmap->devKind;
 	front->cpp = pixmap->drawable.bitsPerPixel / 8;
 	priv->pixmap = pixmap;

@@ -88,15 +88,6 @@ Bool amdgpu_glamor_pre_init(ScrnInfoPtr scrn)
 		return FALSE;
 	}
 
-#if XORG_VERSION_CURRENT < XORG_VERSION_NUMERIC(1,15,0,0,0)
-	if (!xf86LoaderCheckSymbol("glamor_egl_init")) {
-		xf86DrvMsg(scrn->scrnIndex, X_ERROR,
-			   "glamor requires Load \"glamoregl\" in "
-			   "Section \"Module\", disabling.\n");
-		return FALSE;
-	}
-#endif
-
 	/* Load glamor module */
 	if ((glamor_module = xf86LoadSubModule(scrn, GLAMOR_EGL_MODULE_NAME))) {
 		version = xf86GetModuleVersion(glamor_module);
@@ -166,7 +157,7 @@ static Bool amdgpu_glamor_destroy_pixmap(PixmapPtr pixmap)
 #ifndef HAVE_GLAMOR_EGL_DESTROY_TEXTURED_PIXMAP
 	ScreenPtr screen = pixmap->drawable.pScreen;
 	AMDGPUInfoPtr info = AMDGPUPTR(xf86ScreenToScrn(screen));
-	Bool ret;
+	Bool ret = TRUE;
 #endif
 
 	if (pixmap->refcnt == 1) {
@@ -188,7 +179,8 @@ static Bool amdgpu_glamor_destroy_pixmap(PixmapPtr pixmap)
 	return TRUE;
 #else
 	screen->DestroyPixmap = info->glamor.SavedDestroyPixmap;
-	ret = screen->DestroyPixmap(pixmap);
+	if (screen->DestroyPixmap)
+		ret = screen->DestroyPixmap(pixmap);
 	info->glamor.SavedDestroyPixmap = screen->DestroyPixmap;
 	screen->DestroyPixmap = amdgpu_glamor_destroy_pixmap;
 
@@ -346,7 +338,7 @@ amdgpu_glamor_set_pixmap_bo(DrawablePtr drawable, PixmapPtr pixmap)
 				   0, 0, pixmap->devKind, NULL);
 	old->devPrivate.ptr = NULL;
 
-	screen->DestroyPixmap(pixmap);
+	dixDestroyPixmap(pixmap, 0);
 
 	return old;
 }
@@ -366,7 +358,9 @@ amdgpu_glamor_share_pixmap_backing(PixmapPtr pixmap, ScreenPtr secondary,
 
 	tiling_info = amdgpu_pixmap_get_tiling_info(pixmap);
 
-	if (info->family >= AMDGPU_FAMILY_AI)
+	if (info->family >= AMDGPU_FAMILY_GC_12_0_0)
+		is_linear = AMDGPU_TILING_GET(tiling_info, GFX12_SWIZZLE_MODE) == 0;
+	else if (info->family >= AMDGPU_FAMILY_AI)
 		is_linear = AMDGPU_TILING_GET(tiling_info, SWIZZLE_MODE) == 0;
 	else
 		is_linear = AMDGPU_TILING_GET(tiling_info, ARRAY_MODE) == 1;
