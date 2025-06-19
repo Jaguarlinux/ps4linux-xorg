@@ -6,7 +6,7 @@ export LDFLAGS=${LDFLAGS/,-z,now}
 
 
 NOCONFIGURE=1 ./autogen.sh
-./configure $XORG_CONFIG \
+./configure $XORG_PREFIX \
     --enable-glamor
 make
 
