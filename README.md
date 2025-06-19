@@ -15,3 +15,9 @@ See the X.org wiki for
 and
 [more information on the git code manager](https://wiki.x.org/wiki/GitPage).
 
+### How to compile XorgAmdgpups4
+1. chmod +x  ps4_xorg_compile.sh
+2. ./ps4_xorg_compile.sh
+Then let it compile then affter you compile xorg it will auto install it to /usr prefix.
+Then you will be able to  your gui.
+NOTE you need to fellow the BLFS book to figure out how to add that $XORG_PREFIX
