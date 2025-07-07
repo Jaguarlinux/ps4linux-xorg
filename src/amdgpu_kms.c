@@ -1509,11 +1509,15 @@ static void amdgpu_determine_cursor_size(int fd, AMDGPUInfoPtr info)
 		info->cursor_w = value;
 	else if (info->family < AMDGPU_FAMILY_CI)
 		info->cursor_w = CURSOR_WIDTH;
+	else
+		info->cursor_w = CURSOR_WIDTH_CIK;
 
 	if (drmGetCap(fd, DRM_CAP_CURSOR_HEIGHT, &value) == 0)
 		info->cursor_h = value;
 	else if (info->family < AMDGPU_FAMILY_CI)
 		info->cursor_h = CURSOR_HEIGHT;
+	else
+		info->cursor_h = CURSOR_HEIGHT_CIK;
 }
 
 /* When the root window is mapped, set the initial modes */
