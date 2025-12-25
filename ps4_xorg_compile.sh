@@ -2,14 +2,17 @@
 
 export CFLAGS=${CFLAGS/-fno-plt}
 export CXXFLAGS=${CXXFLAGS/-fno-plt}
-export LDFLAGS=${LDFLAGS/,-z,now}
+export LDFLAGS=${LDFLAGS/-Wl,-z,now}
 
+meson build \
+  -D glamor=enabled
 
-NOCONFIGURE=1 ./autogen.sh
-./configure --prefix=$XORG_PREFIX \
-    --enable-glamor
-make
+# Print config
+meson configure build
 
-make check
-
-make install
+meson compile -C build
+  
+meson test -C build --print-errorlogs
+  
+meson install -C build
+  
